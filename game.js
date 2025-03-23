@@ -218,8 +218,10 @@ async function updateLeaderboard() {
       tips: tips,
       timestamp: new Date()
     });
+    gameBox.innerHTML += "<p style='color:lightgreen;'>✅ Score submitted to global leaderboard!</p>";
   } catch (e) {
     console.error("Error saving to leaderboard:", e);
+    gameBox.innerHTML += "<p style='color:red;'>⚠️ Failed to submit score. Check Firestore permissions.</p>";
   }
 }
 
