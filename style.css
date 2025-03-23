@@ -1,0 +1,47 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: monospace;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  #game {
+    width: 90%;
+    max-width: 600px;
+    background-color: #34495e;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  
+  button {
+    padding: 10px 20px;
+    margin: 10px;
+    background-color: #1abc9c;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  #player-info {
+    margin-bottom: 15px;
+  }
+  
+  #avatar {
+    font-size: 48px;
+    margin-bottom: 5px;
+  }
+  
+  #shop-items button {
+    margin: 5px;
+    padding: 5px 10px;
+    background-color: #f39c12;
+  }
+  
