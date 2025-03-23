@@ -1,26 +1,3 @@
-let currentGolfer, currentEvent;
-let tips = 0;
-let loopCount = 0;
-let totalHoles = 9;
-let playerName = '';
-let lifetimeTips = 0;
-let ownedItems = [];
-
-let jokeShownAtStart = false;
-let jokeShownAtTurn = false;
-let gameInProgress = false;
-
-const avatarDisplay = document.getElementById('avatar');
-const gameBox = document.getElementById('game-box');
-const choicesBox = document.getElementById('choices');
-const startButton = document.getElementById('start-button');
-const holeSelector = document.getElementById('hole-selector');
-const nameInput = document.getElementById('name-input');
-const welcomeMessage = document.getElementById('welcome-message');
-const cashTotal = document.getElementById('cash-total');
-const shop = document.getElementById('shop');
-const shopItemsDiv = document.getElementById('shop-items');
-
 const golfers = [
   { name: "Chad the Business Bro", quirk: "Answers phone mid-swing", bonus: 0 },
   { name: "Linda the Rage Monster", quirk: "Breaks clubs when upset", bonus: 0 },
@@ -28,18 +5,34 @@ const golfers = [
   { name: "Marge the Zen Golfer", quirk: "Meditates before every shot", bonus: 0 }
 ];
 
-const events = [
-  { text: "A squirrel steals the ball.", choices: ["Chase it", "Drop a new ball"], outcomes: [10, 0] },
-  { text: "UFO hovers over the green.", choices: ["Ignore it", "Signal it"], outcomes: [15, 10] },
-  { text: "Cart runs out of power.", choices: ["Push it", "Call backup"], outcomes: [20, 5] },
-  { text: "Golfer plays a shot off a rock.", choices: ["Film it", "Look away"], outcomes: [25, 0] },
-  { text: "Drone delivers snacks mid-round.", choices: ["Accept snacks", "Wave it off"], outcomes: [30, 0] }
-];
-
 const golfJokes = [
   "Why do golfers carry an extra pair of pants? In case they get a hole in one.",
+  "What's a golfer's favorite dance move? The bogey boogie.",
+  "Why don't golfers ever get lost? They always follow the course.",
+  "How does a golfer stay in shape? By doing lots of swing sets.",
+  "Why did the golfer bring two shirts? In case he got a hole in one.",
+  "What's Tiger Woods' favorite sandwich? Club.",
   "What’s a golfer’s worst nightmare? The cart girl running out of beer.",
-  "What’s Tiger Woods’ favorite sandwich? Club."
+  "Why did the golfer get kicked out of the zoo? He tried to chip an elephant.",
+  "Why did the caddy get promoted? He was tee-rific.",
+  "Why did the ball go to therapy? Too much pressure on the green."
+];
+
+const events = [
+  // Common events
+  { text: "A squirrel steals the ball.", choices: ["Chase it", "Drop a new ball"], outcomes: [10, 0] },
+  { text: "Golfer insists on using driver for a chip shot.", choices: ["Talk them out of it", "Let them cook"], outcomes: [20, 0] },
+  { text: "A drone drops a hot dog mid-round.", choices: ["Eat it", "Ignore it"], outcomes: [15, 5] },
+  { text: "Golfer plays air guitar with their putter.", choices: ["Cheer them on", "Ask them to focus"], outcomes: [10, 0] },
+  { text: "Cart dies near the bunker.", choices: ["Push it", "Call for help"], outcomes: [20, 5] },
+  { text: "Ball lands in another golfer’s nachos.", choices: ["Replace ball", "Play it anyway"], outcomes: [0, 25] },
+  { text: "The wind starts singing 'Eye of the Tiger'.", choices: ["Flex with confidence", "Act casual"], outcomes: [30, 15] },
+
+  // Rare/absurd events
+  { text: "A time traveler asks for directions to the clubhouse.", choices: ["Point left", "Point right"], outcomes: [50, 25] },
+  { text: "You find a glowing golf ball marked 'EXCALIBALL'.", choices: ["Use it", "Save it for later"], outcomes: [50, 0] },
+  { text: "An alpaca wanders across the fairway.", choices: ["Offer a snack", "Take a selfie"], outcomes: [25, 15] },
+  { text: "You write a haiku mid-loop.", choices: ["Share it", "Keep it secret"], outcomes: [30, 20] }
 ];
 
 const shopItems = [
@@ -50,6 +43,34 @@ const shopItems = [
   { name: "🎧 AirPods", cost: 999, symbol: "🎧" }
 ];
 
+// Game state
+let currentGolfer, currentEvent;
+let tips = 0;
+let loopCount = 0;
+let totalHoles = 9;
+let playerName = '';
+let lifetimeTips = 0;
+let ownedItems = [];
+let leaderboard = [];
+
+let jokeShownAtStart = false;
+let jokeShownAtTurn = false;
+let gameInProgress = false;
+
+// DOM
+const avatarDisplay = document.getElementById('avatar');
+const gameBox = document.getElementById('game-box');
+const choicesBox = document.getElementById('choices');
+const startButton = document.getElementById('start-button');
+const holeSelector = document.getElementById('hole-selector');
+const nameInput = document.getElementById('name-input');
+const welcomeMessage = document.getElementById('welcome-message');
+const cashTotal = document.getElementById('cash-total');
+const shop = document.getElementById('shop');
+const shopItemsDiv = document.getElementById('shop-items');
+const leaderboardDiv = document.getElementById('leaderboard');
+const leaderboardList = document.getElementById('leaderboard-list');
+
 function savePlayerName() {
   const input = document.getElementById('playerName');
   const name = input.value.trim();
@@ -58,8 +79,10 @@ function savePlayerName() {
   localStorage.setItem('caddyName', name);
   if (!localStorage.getItem('caddyTips')) localStorage.setItem('caddyTips', '0');
   if (!localStorage.getItem('caddyGear')) localStorage.setItem('caddyGear', '[]');
+  if (!localStorage.getItem('caddyLeaderboard')) localStorage.setItem('caddyLeaderboard', '[]');
   lifetimeTips = parseInt(localStorage.getItem('caddyTips')) || 0;
   ownedItems = JSON.parse(localStorage.getItem('caddyGear')) || [];
+  leaderboard = JSON.parse(localStorage.getItem('caddyLeaderboard')) || [];
   updateHUD();
   nameInput.style.display = 'none';
   holeSelector.style.display = 'block';
@@ -91,14 +114,8 @@ function renderShop() {
 }
 
 function buyItem(item) {
-  if (gameInProgress) {
-    alert("The Pro Shop is closed during rounds. Loop first, shop after.");
-    return;
-  }
-  if (lifetimeTips < item.cost) {
-    alert("You don’t have enough tips for that, looper.");
-    return;
-  }
+  if (gameInProgress) return alert("The Pro Shop is closed during rounds.");
+  if (lifetimeTips < item.cost) return alert("You don’t have enough tips for that.");
   lifetimeTips -= item.cost;
   ownedItems.push(item);
   localStorage.setItem('caddyTips', lifetimeTips);
@@ -126,6 +143,7 @@ function startGame() {
   jokeShownAtTurn = false;
   gameInProgress = true;
   shop.style.display = 'none';
+  leaderboardDiv.style.display = 'none';
   startButton.style.display = 'none';
   gameBox.innerHTML = '';
   nextEvent();
@@ -169,7 +187,7 @@ function showGolfJoke(timing) {
 }
 
 function handleChoice(choiceIndex) {
-  const eventTips = Math.max(0, currentEvent.outcomes[choiceIndex]); // $0 or positive only
+  const eventTips = Math.max(0, currentEvent.outcomes[choiceIndex]);
   tips += eventTips;
   const resultText = eventTips > 0 ? "Nice call!" : "Oof. No tip.";
   gameBox.innerHTML = `<p>${resultText} ${eventTips > 0 ? `(+$${eventTips})` : ""}</p>`;
@@ -182,9 +200,28 @@ function endGame() {
   lifetimeTips += tips;
   localStorage.setItem('caddyTips', lifetimeTips.toString());
   updateHUD();
+  updateLeaderboard();
   renderShop();
   gameBox.innerHTML = `<h2>Loop Complete!</h2><p>You earned $${tips} in tips over ${totalHoles} holes.</p>`;
   choicesBox.innerHTML = '';
   startButton.textContent = "Play Again";
   holeSelector.style.display = 'block';
+  leaderboardDiv.style.display = 'block';
+  renderLeaderboard();
+}
+
+function updateLeaderboard() {
+  leaderboard.push({ name: playerName, tips: tips });
+  leaderboard.sort((a, b) => b.tips - a.tips);
+  leaderboard = leaderboard.slice(0, 10);
+  localStorage.setItem('caddyLeaderboard', JSON.stringify(leaderboard));
+}
+
+function renderLeaderboard() {
+  leaderboardList.innerHTML = '';
+  leaderboard.forEach((entry, index) => {
+    const li = document.createElement('li');
+    li.textContent = `#${index + 1} - ${entry.name}: $${entry.tips}`;
+    leaderboardList.appendChild(li);
+  });
 }
