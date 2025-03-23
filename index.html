@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Caddy Trainer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="game">
+    <h1>Caddy Trainer: Prototype</h1>
+
+    <div id="player-info">
+      <div id="avatar">🧍</div>
+      <p id="welcome-message">Welcome, Looper.</p>
+      <p id="cash-total">Lifetime Tips: $0</p>
+    </div>
+
+    <div id="name-input">
+      <input type="text" id="playerName" placeholder="Enter your name" />
+      <button onclick="savePlayerName()">Start</button>
+    </div>
+
+    <div id="hole-selector" style="display:none;">
+      <p>How many holes would you like to play?</p>
+      <button onclick="setHoleCount(9)">9 Holes</button>
+      <button onclick="setHoleCount(18)">18 Holes</button>
+    </div>
+
+    <button id="start-button" style="display:none;">Start Loop</button>
+
+    <div id="game-box"></div>
+    <div id="choices"></div>
+
+    <div id="shop" style="display:none;">
+      <h3>🛍️ Pro Shop</h3>
+      <div id="shop-items"></div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
