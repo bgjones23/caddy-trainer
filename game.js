@@ -232,13 +232,23 @@ async function renderLeaderboard() {
       .orderBy("tips", "desc")
       .limit(10)
       .get();
-    snapshot.forEach((doc, index) => {
+
+    let rank = 1;
+    snapshot.forEach((doc) => {
       const entry = doc.data();
       const li = document.createElement('li');
-      li.textContent = `#${index + 1} - ${entry.name}: $${entry.tips}`;
+
+      // Capitalize first letters of name
+      const nameFormatted = entry.name
+        ? entry.name.charAt(0).toUpperCase() + entry.name.slice(1)
+        : "Unknown Caddy";
+
+      li.textContent = `#${rank} - ${nameFormatted}: $${entry.tips}`;
       leaderboardList.appendChild(li);
+      rank++;
     });
   } catch (e) {
     console.error("Error loading leaderboard:", e);
+    leaderboardList.innerHTML = '<li>⚠️ Failed to load leaderboard</li>';
   }
 }
