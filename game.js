@@ -210,18 +210,33 @@ function endGame() {
   renderLeaderboard();
 }
 
-function updateLeaderboard() {
-  leaderboard.push({ name: playerName, tips: tips });
-  leaderboard.sort((a, b) => b.tips - a.tips);
-  leaderboard = leaderboard.slice(0, 10);
-  localStorage.setItem('caddyLeaderboard', JSON.stringify(leaderboard));
+// --- Firebase Leaderboard Integration ---
+async function updateLeaderboard() {
+  try {
+    await db.collection("leaderboard").add({
+      name: playerName,
+      tips: tips,
+      timestamp: new Date()
+    });
+  } catch (e) {
+    console.error("Error saving to leaderboard:", e);
+  }
 }
 
-function renderLeaderboard() {
+async function renderLeaderboard() {
   leaderboardList.innerHTML = '';
-  leaderboard.forEach((entry, index) => {
-    const li = document.createElement('li');
-    li.textContent = `#${index + 1} - ${entry.name}: $${entry.tips}`;
-    leaderboardList.appendChild(li);
-  });
+  try {
+    const snapshot = await db.collection("leaderboard")
+      .orderBy("tips", "desc")
+      .limit(10)
+      .get();
+    snapshot.forEach((doc, index) => {
+      const entry = doc.data();
+      const li = document.createElement('li');
+      li.textContent = `#${index + 1} - ${entry.name}: $${entry.tips}`;
+      leaderboardList.appendChild(li);
+    });
+  } catch (e) {
+    console.error("Error loading leaderboard:", e);
+  }
 }
