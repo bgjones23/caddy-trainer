@@ -50,14 +50,15 @@
   <!-- Firebase Config (replace these values with your own project info) -->
   <script>
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyBR4INwvfqx-BdK4s9tZyBewPkI36pWQCk",
+      authDomain: "caddy-trainer.firebaseapp.com",
+      projectId: "caddy-trainer",
+      storageBucket: "caddy-trainer.firebasestorage.app",
+      messagingSenderId: "723583818154",
+      appId: "1:723583818154:web:ed1bf65b320d402f0c33d3"
     };
     const app = firebase.initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
     const db = firebase.firestore();
   </script>
 
