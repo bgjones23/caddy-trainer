@@ -2,7 +2,8 @@ const golfers = [
   { name: "Chad the Business Bro", quirk: "Answers phone mid-swing", bonus: 0 },
   { name: "Linda the Rage Monster", quirk: "Breaks clubs when upset", bonus: 0 },
   { name: "Trevor the YouTube Guy", quirk: "Tries trick shots constantly", bonus: 0 },
-  { name: "Marge the Zen Golfer", quirk: "Meditates before every shot", bonus: 0 }
+  { name: "Marge the Zen Golfer", quirk: "Meditates before every shot", bonus: 0 },
+  { name: "Zhu the Child Prodigy", quirk: "Genius, but flips out easily", bonus: 0 }
 ];
 
 const golfJokes = [
@@ -59,7 +60,8 @@ const shopItems = [
   { name: "🕶️ Sunglasses", cost: 100, symbol: "🕶️" },
   { name: "⛳ Caddy Bib", cost: 200, symbol: "⛳" },
   { name: "💎 Legendary Towel", cost: 500, symbol: "💎" },
-  { name: "🎧 AirPods", cost: 999, symbol: "🎧" }
+  { name: "🎧 AirPods", cost: 999, symbol: "🎧" },
+  { name: "👕 Signed Tiger Woods polo", cost: 2500, symbol: "👕" }
 ];
 
 // Game state
@@ -200,7 +202,7 @@ function showGolfJoke(timing) {
   const timingLabel = timing === 'start' ? "Before the First Tee" : "At the Turn";
   gameBox.innerHTML += `<p style="margin-top:20px; font-style:italic;">Golf Joke (${timingLabel}):<br>🃏 ${joke}</p>`;
   choicesBox.innerHTML = '';
-  setTimeout(() => nextEvent(), 3000);
+  setTimeout(() => nextEvent(), 7000);
   if (timing === 'start') jokeShownAtStart = true;
   if (timing === 'turn') jokeShownAtTurn = true;
 }
